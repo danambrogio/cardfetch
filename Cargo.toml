@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 clap = {version = "2.33.0", features = ["yaml"]}
+async-std = "1.4.0"
+surf = "1.0.3"

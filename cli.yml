@@ -2,3 +2,8 @@ name: cardfetch
 version: "0.1"
 author: Dan Ambrogio <dan.ambrogio@gmail.com>
 about: A CLI for fetching Magic Cards
+args:
+    - CARD:
+        help: The card to look up
+        required: true
+        index: 1
