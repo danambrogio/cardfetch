@@ -1,14 +1,12 @@
-# cli-template
+# cardfetch
 
-`cli-template` is a template for creating command line interfaces in Rust
+`cardfetch` is A CLI for fetching Magic Cards
 
 ## Usage
 
-Clone this project, then copy `cli.yml` into `cli.yml` to set up your required command line flags and arguments.
+cardfetch <cardname>
 
-Once that's done, you can implement everything in `main.rs`.
-
-Make sure to update `Cargo.toml` to set your author name etc.
+## Building
 
 To build your project binaries, use `cargo build --release`. Your binary will be in `/target/release`.
 
