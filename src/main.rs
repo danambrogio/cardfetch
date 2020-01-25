@@ -3,13 +3,17 @@ extern crate clap;
 extern crate surf;
 extern crate serde_json;
 extern crate image;
+extern crate url;
 
 use std::str::from_utf8;
+use std::fs;
 use std::fs::File;
 use std::io::Write;
+use std::io::Cursor;
 use clap::App;
 use async_std::task;
 use serde_json::Value;
+use url::form_urlencoded::{byte_serialize};
 
 fn main() -> Result<(), surf::Exception> {
   let yaml = load_yaml!("../cli.yml");
@@ -25,7 +29,9 @@ fn main() -> Result<(), surf::Exception> {
 }
 
 async fn get_card(name: &str) -> Result<(), surf::Exception> {
-  let url = format!("https://api.magicthegathering.io/v1/cards?name=\"{}\"", name);
+  let cardname: String = byte_serialize(name.as_bytes()).collect();
+  let url = format!("https://api.magicthegathering.io/v1/cards?name=\"{}\"", cardname);
+  println!("{}", url);
   let body: String = surf::get(url).recv_string().await?;
   let json = parse_json(&body);
 
@@ -37,7 +43,7 @@ async fn get_card(name: &str) -> Result<(), surf::Exception> {
   https_url.insert(4, 's'); //convert to https
 
   let image = surf::get(https_url).await?.body_bytes().await?;
-  let mut out: std::fs::File = File::create("card.jpeg").expect("failed to create file");
+  let mut out: std::fs::File = File::create("card.png").expect("failed to create file");
   out.write_all(&image)?;
   
   Ok(())
@@ -53,12 +59,14 @@ fn parse_json(json: &str) -> serde_json::Value {
 }
 
 fn print_card() -> () {
-  let img = match image::open("./card.jpeg") {
-    Ok(p) => p,
-    Err(e) => panic!("Not a valid image path or could not open image. {}", e),
+  let img = match fs::read("./card.png") {
+      Ok(p) => p,
+      Err(e) => panic!("Not a valid image path or could not open image. {}", e),
   };
+  let image = image::io::Reader::new(Cursor::new(img))
+    .with_guessed_format().unwrap().decode().unwrap();
 
-  let img = img.resize_exact(120, 60, image::FilterType::Nearest);
+  let img = image.resize_exact(120, 60, image::FilterType::Nearest);
 
   let imgbuf = img.to_luma();
   let ascii_art = imgbuf.pixels()
