@@ -31,7 +31,6 @@ fn main() -> Result<(), surf::Exception> {
 async fn get_card(name: &str) -> Result<(), surf::Exception> {
   let cardname: String = byte_serialize(name.as_bytes()).collect();
   let url = format!("https://api.magicthegathering.io/v1/cards?name=\"{}\"", cardname);
-  println!("{}", url);
   let body: String = surf::get(url).recv_string().await?;
   let json = parse_json(&body);
 
@@ -66,7 +65,7 @@ fn print_card() -> () {
   let image = image::io::Reader::new(Cursor::new(img))
     .with_guessed_format().unwrap().decode().unwrap();
 
-  let img = image.resize_exact(120, 60, image::FilterType::Nearest);
+  let img = image.resize_exact(100, 50, image::FilterType::Nearest);
 
   let imgbuf = img.to_luma();
   let ascii_art = imgbuf.pixels()
