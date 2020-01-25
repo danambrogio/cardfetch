@@ -65,7 +65,7 @@ fn print_card() -> () {
   let image = image::io::Reader::new(Cursor::new(img))
     .with_guessed_format().unwrap().decode().unwrap();
 
-  let img = image.resize_exact(100, 50, image::FilterType::Nearest);
+  let img = image.resize_exact(94, 47, image::FilterType::Nearest);
 
   let imgbuf = img.to_luma();
   let ascii_art = imgbuf.pixels()
