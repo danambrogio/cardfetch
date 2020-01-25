@@ -1,7 +1,7 @@
 name: cardfetch
 version: "0.1"
 author: Dan Ambrogio <dan.ambrogio@gmail.com>
-about: A CLI for fetching Magic Cards
+about: A CLI for fetching Magic Cards and printing them as ASCII
 args:
     - CARD:
         help: The card to look up. If it's multiple words, wrap it in quotes.

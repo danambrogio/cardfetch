@@ -1,6 +1,6 @@
 # cardfetch
 
-`cardfetch` is A CLI for fetching Magic Cards
+`cardfetch` is A CLI for fetching Magic Cards and printing them as ASCII
 
 ## Usage
 
