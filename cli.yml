@@ -4,6 +4,6 @@ author: Dan Ambrogio <dan.ambrogio@gmail.com>
 about: A CLI for fetching Magic Cards
 args:
     - CARD:
-        help: The card to look up
+        help: The card to look up. If it's multiple words, wrap it in quotes.
         required: true
         index: 1
