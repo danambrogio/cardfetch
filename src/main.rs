@@ -44,7 +44,7 @@ async fn get_card(name: &str) -> Result<(), surf::Exception> {
   let image = surf::get(https_url).await?.body_bytes().await?;
   let mut out: std::fs::File = File::create("card.png").expect("failed to create file");
   out.write_all(&image)?;
-  
+
   Ok(())
 }
 
@@ -81,6 +81,8 @@ fn print_card() -> () {
   for s in subs {
       println!("{}", s);
   }
+
+  fs::remove_file("card.png").unwrap();
 }
 
 fn intensity_to_ascii(value: &u8) -> &str {
