@@ -5,14 +5,11 @@ extern crate serde_json;
 extern crate image;
 extern crate url;
 
-use std::str::from_utf8;
-use std::fs;
-use std::fs::File;
-use std::io::Write;
-use std::io::Cursor;
-use clap::App;
 use async_std::task;
+use clap::App;
 use serde_json::Value;
+use std::io::Cursor;
+use std::str::from_utf8;
 use url::form_urlencoded::{byte_serialize};
 
 fn main() -> Result<(), surf::Exception> {
@@ -20,10 +17,7 @@ fn main() -> Result<(), surf::Exception> {
   let matches = App::from_yaml(yaml).get_matches();
 
   let card_name = matches.value_of("CARD").unwrap();
-
-  // Download the card image
   task::block_on(get_card(card_name)).unwrap();
-  print_card();
 
   Ok(())
 }
@@ -42,8 +36,7 @@ async fn get_card(name: &str) -> Result<(), surf::Exception> {
   https_url.insert(4, 's'); //convert to https
 
   let image = surf::get(https_url).await?.body_bytes().await?;
-  let mut out: std::fs::File = File::create("card.png").expect("failed to create file");
-  out.write_all(&image)?;
+  print_card(image);
 
   Ok(())
 }
@@ -57,11 +50,10 @@ fn parse_json(json: &str) -> serde_json::Value {
   root
 }
 
-fn print_card() -> () {
-  let img = match fs::read("./card.png") {
-      Ok(p) => p,
-      Err(e) => panic!("Not a valid image path or could not open image. {}", e),
-  };
+
+// Shamelessly stolen from
+// https://github.com/edelsonc/asciify/blob/master/src/main.rs
+fn print_card(img: Vec<u8>) -> () {
   let image = image::io::Reader::new(Cursor::new(img))
     .with_guessed_format().unwrap().decode().unwrap();
 
@@ -81,13 +73,10 @@ fn print_card() -> () {
   for s in subs {
       println!("{}", s);
   }
-
-  fs::remove_file("card.png").unwrap();
 }
 
 fn intensity_to_ascii(value: &u8) -> &str {
   // changes an intensity into an ascii character
-  // this is a central step in creating the ascii art
   let ascii_chars  = [
       " ", ".", "^", ",", ":", "_", "=", "~", "+", "O", "o", "*",
       "#", "&", "%", "B", "@", "$"
