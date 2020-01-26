@@ -28,14 +28,11 @@ async fn get_card(name: &str) -> Result<(), surf::Exception> {
   let body: String = surf::get(url).recv_string().await?;
   let json = parse_json(&body);
 
-  let card_url = match json.get("cards").and_then(|value| value.get(0)).and_then(|value| value.get("imageUrl")).and_then(|value| value.as_str()) {
-    Some(x) => x,
-    None => "",
-  };
-  let mut https_url = String::from(card_url);
-  https_url.insert(4, 's'); //convert to https
+  
+  let mut card_url = get_card_url(json);
+  card_url.insert(4, 's'); //convert to https
 
-  let image = surf::get(https_url).await?.body_bytes().await?;
+  let image = surf::get(card_url).await?.body_bytes().await?;
   print_card(image);
 
   Ok(())
@@ -48,6 +45,18 @@ fn parse_json(json: &str) -> serde_json::Value {
   };
 
   root
+}
+
+// Gets `cards`
+// Gets [0]th index of list
+// Gets `imageUrl` if it exists
+fn get_card_url(json: Value) -> String {
+  let card_url = match json.get("cards").and_then(|value| value.get(0)).and_then(|value| value.get("imageUrl")).and_then(|value| value.as_str()) {
+    Some(x) => x,
+    None => "",
+  };
+  let https_url = String::from(card_url);
+  https_url
 }
 
 
