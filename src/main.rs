@@ -47,18 +47,18 @@ fn parse_json(json: &str) -> serde_json::Value {
   root
 }
 
-// Gets `cards`
-// Gets [0]th index of list
-// Gets `imageUrl` if it exists
+// Gets the `imageUrl` of the first card that has one
 fn get_card_url(json: Value) -> String {
-  let card_url = match json.get("cards").and_then(|value| value.get(0)).and_then(|value| value.get("imageUrl")).and_then(|value| value.as_str()) {
-    Some(x) => x,
+  let cards = json["cards"].as_array().unwrap();
+  let c: Vec<Value> = cards.clone();
+  let cards_with_images: Vec<Value> = c.into_iter().filter(|card| card["imageUrl"].is_string()).collect();
+  // using indexes here can fail
+  let x = match cards_with_images[0]["imageUrl"].as_str() {
+    Some(y) => y,
     None => "",
   };
-  let https_url = String::from(card_url);
-  https_url
+  String::from(x)
 }
-
 
 // Shamelessly stolen from
 // https://github.com/edelsonc/asciify/blob/master/src/main.rs
